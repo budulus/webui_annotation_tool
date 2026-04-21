@@ -1,0 +1,204 @@
+# =============================================================================
+# ai_correction / software — root ignore rules (applies to all subprojects)
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# Operating system
+# -----------------------------------------------------------------------------
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Dropbox & sync artifacts
+.dropbox
+.dropbox.attr
+*conflicted copy*
+*Conflicted Copy*
+
+# -----------------------------------------------------------------------------
+# Editors & IDEs
+# -----------------------------------------------------------------------------
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+*.code-workspace
+*.swp
+*.swo
+*~
+.project
+.pydevproject
+.settings/
+*.sublime-project
+*.sublime-workspace
+
+# Cursor (local agent state; keep shared rules in-repo if you add them explicitly)
+.cursor/
+
+# Claude / local assistant caches (per-machine)
+.claude/
+
+# -----------------------------------------------------------------------------
+# Python bytecode & caches
+# -----------------------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# -----------------------------------------------------------------------------
+# Virtual environments & local interpreters
+# -----------------------------------------------------------------------------
+.venv/
+venv/
+ENV/
+env/
+.env/
+.virtualenv/
+
+# -----------------------------------------------------------------------------
+# Packaging, builds & installers
+# -----------------------------------------------------------------------------
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+pip-wheel-metadata/
+*.manifest
+
+# uv (cache; lockfiles stay tracked for reproducible builds)
+.uv/
+
+# -----------------------------------------------------------------------------
+# Testing, coverage & quality tools
+# -----------------------------------------------------------------------------
+.pytest_cache/
+.mypy_cache/
+.dmypy.json
+dmypy.json
+.ruff_cache/
+.pytype/
+.pyre/
+.hypothesis/
+.tox/
+.nox/
+htmlcov/
+.coverage
+.coverage.*
+coverage.xml
+*.cover
+*.py,cover
+.cache
+nosetests.xml
+
+# -----------------------------------------------------------------------------
+# Secrets & local credentials (never commit)
+# -----------------------------------------------------------------------------
+.env
+!.env.example
+**/google_client_secret.json
+**/tokens.json
+
+# -----------------------------------------------------------------------------
+# Jupyter
+# -----------------------------------------------------------------------------
+.ipynb_checkpoints/
+profile_default/
+ipython_config.py
+
+# -----------------------------------------------------------------------------
+# ML, LLM & experiment tooling (common in this repo)
+# -----------------------------------------------------------------------------
+wandb/
+mlruns/
+.neptune/
+.dvc/tmp/
+.dvc/cache/
+lightning_logs/
+tensorboard_logs/
+runs/
+outputs/
+dataset/
+datasets/
+*.ckpt
+*.pt
+*.pth
+*.onnx
+*.pb
+*.h5
+*.hdf5
+*.joblib
+*.pickle
+*.pkl
+
+# Hugging Face & model caches (re-download locally)
+.cache/huggingface/
+~/.cache/huggingface/
+
+# -----------------------------------------------------------------------------
+# LaTeX & PDF build artifacts (e.g. json_to_tex pipelines)
+# -----------------------------------------------------------------------------
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.lof
+*.log
+*.lot
+*.out
+*.synctex.gz
+*.toc
+*.xdv
+
+# -----------------------------------------------------------------------------
+# Large / local datasets & batch outputs (keep code; exclude bulk data)
+# Add per-subproject paths here or in that subfolder’s .gitignore as needed.
+# -----------------------------------------------------------------------------
+a_data/
+grid_removal/data/
+grid_removal/batch_output/
+
+# -----------------------------------------------------------------------------
+# Logs & temp files
+# -----------------------------------------------------------------------------
+logs/
+*.log
+tmp/
+temp/
+*.tmp
+*.temp
+*.bak
+*.orig
+
+# -----------------------------------------------------------------------------
+# Misc tooling
+# -----------------------------------------------------------------------------
+.mypy_tmp/
+celerybeat-schedule
+celerybeat.pid
+*.sqlite3
+*.db-journal

@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="/manifest.json">
+<title>Mask Annotator</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<nav id="controls">
+  <button id="prev" title="Previous (←)">‹</button>
+  <span id="position">— / —</span>
+  <button id="next" title="Next (→)">›</button>
+
+  <span class="sep"></span>
+
+  <button id="tool" data-mode="brush" title="Toggle brush/eraser (e)">Brush</button>
+  <label class="slider">
+    <span id="size-label">Size 20</span>
+    <input id="size" type="range" min="2" max="200" step="1" value="20">
+  </label>
+  <button id="undo" title="Undo (z)">Undo</button>
+
+  <span class="sep"></span>
+
+  <label class="slider">
+    <span id="opacity-label">Opacity 0.5</span>
+    <input id="opacity" type="range" min="0" max="1" step="0.05" value="0.5">
+  </label>
+  <label class="check">
+    <input id="invert" type="checkbox"> Invert display
+  </label>
+</nav>
+
+<main id="stage">
+  <div id="canvas-wrap">
+    <canvas id="image-canvas"></canvas>
+    <canvas id="overlay-canvas"></canvas>
+    <div id="cursor-preview"></div>
+    <div id="spinner" hidden></div>
+  </div>
+  <div id="toast">Saved ✓</div>
+</main>
+
+<script src="/static/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+{
+  "name": "Mask Annotator",
+  "short_name": "Masks",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#14161a",
+  "theme_color": "#14161a",
+  "orientation": "any"
+}
