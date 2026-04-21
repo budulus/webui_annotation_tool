@@ -1,0 +1,11 @@
+[project]
+name = "webui-annotation-tool"
+version = "0.1.0"
+description = "Rapid mask annotation tool — FastAPI backend"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi",
+    "uvicorn[standard]",
+    "pillow",
+]
