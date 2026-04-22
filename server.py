@@ -31,6 +31,7 @@ from PIL import Image
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 STATIC_DIR = SCRIPT_DIR / "static"
+EXCLUDE_SUFFIX = "_exclude"
 
 
 def natural_key(s: str):
@@ -41,6 +42,21 @@ def safe_name(filename: str) -> str:
     if not filename or "/" in filename or "\\" in filename or ".." in filename:
         raise HTTPException(status_code=400, detail="invalid filename")
     return filename
+
+
+def is_excluded(name: str) -> bool:
+    return Path(name).stem.endswith(EXCLUDE_SUFFIX)
+
+
+def with_exclude(name: str, exclude: bool) -> str:
+    p = Path(name)
+    stem = p.stem
+    already = stem.endswith(EXCLUDE_SUFFIX)
+    if exclude and not already:
+        return f"{stem}{EXCLUDE_SUFFIX}{p.suffix}"
+    if not exclude and already:
+        return f"{stem[: -len(EXCLUDE_SUFFIX)]}{p.suffix}"
+    return name
 
 
 def make_app(dataset: Path) -> FastAPI:
@@ -123,6 +139,49 @@ def make_app(dataset: Path) -> FastAPI:
                     pass
 
         return {"ok": True}
+
+    @app.post("/api/exclude/{filename}")
+    async def post_exclude(filename: str, request: Request):
+        name = safe_name(filename)
+        try:
+            payload = await request.json()
+        except Exception:
+            raise HTTPException(status_code=400, detail="invalid JSON body")
+        if not isinstance(payload, dict) or "exclude" not in payload:
+            raise HTTPException(status_code=400, detail="missing 'exclude' field")
+        want_exclude = bool(payload["exclude"])
+
+        target = with_exclude(name, want_exclude)
+        if target == name:
+            return {"ok": True, "filename": name}
+
+        src_image = images_dir / name
+        src_mask = masks_dir / name
+        dst_image = images_dir / target
+        dst_mask = masks_dir / target
+
+        if not src_image.is_file() or not src_mask.is_file():
+            raise HTTPException(status_code=404, detail="source pair not found")
+        if dst_image.exists() or dst_mask.exists():
+            raise HTTPException(
+                status_code=409,
+                detail=f"target '{target}' already exists",
+            )
+
+        os.replace(src_image, dst_image)
+        try:
+            os.replace(src_mask, dst_mask)
+        except OSError as e:
+            try:
+                os.replace(dst_image, src_image)
+            except OSError:
+                pass
+            raise HTTPException(
+                status_code=500,
+                detail=f"mask rename failed: {e}",
+            )
+
+        return {"ok": True, "filename": target}
 
     return app
 

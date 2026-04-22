@@ -23,6 +23,9 @@
   const opacityInput = document.getElementById('opacity');
   const opacityLabel = document.getElementById('opacity-label');
   const invertInput = document.getElementById('invert');
+  const excludeInput = document.getElementById('exclude');
+
+  const EXCLUDE_SUFFIX = '_exclude';
 
   const imageCtx = imageCanvas.getContext('2d');
   const overlayCtx = overlayCanvas.getContext('2d');
@@ -88,6 +91,12 @@
 
   function showSpinner(show) {
     spinner.hidden = !show;
+  }
+
+  function isExcludedName(name) {
+    const dot = name.lastIndexOf('.');
+    const stem = dot > 0 ? name.slice(0, dot) : name;
+    return stem.endsWith(EXCLUDE_SUFFIX);
   }
 
   // ── layout ─────────────────────────────────────────────────────────────
@@ -244,6 +253,7 @@
     idx = ((newIdx % files.length) + files.length) % files.length;
     const name = files[idx];
     positionEl.textContent = `${idx + 1} / ${files.length} — ${name}`;
+    excludeInput.checked = isExcludedName(name);
 
     const entry = await ensureLoaded(name);
     const [imgEl, maskEl] = await Promise.all([
@@ -304,6 +314,48 @@
     } catch (err) {
       console.error(err);
       alert('Save failed — not navigating. Check console.');
+    } finally {
+      navigating = false;
+    }
+  }
+
+  async function toggleExclude(nextState) {
+    if (!files.length) return;
+    const oldName = files[idx];
+    const wasChecked = isExcludedName(oldName);
+    if (drawing || navigating) {
+      excludeInput.checked = wasChecked;
+      return;
+    }
+    if (nextState === wasChecked) return;
+    navigating = true;
+    try {
+      await saveCurrent();
+      const r = await fetch(`/api/exclude/${encodeURIComponent(oldName)}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ exclude: nextState }),
+      });
+      if (!r.ok) {
+        let detail = `${r.status}`;
+        try { detail = (await r.json()).detail || detail; } catch {}
+        throw new Error(detail);
+      }
+      const { filename: newName } = await r.json();
+      if (newName !== oldName) {
+        const entry = cache.get(oldName);
+        if (entry) {
+          cache.set(newName, entry);
+          cache.delete(oldName);
+        }
+        files[idx] = newName;
+        positionEl.textContent = `${idx + 1} / ${files.length} — ${newName}`;
+      }
+      excludeInput.checked = isExcludedName(files[idx]);
+    } catch (err) {
+      console.error(err);
+      excludeInput.checked = wasChecked;
+      alert(`Exclude toggle failed: ${err.message || err}`);
     } finally {
       navigating = false;
     }
@@ -404,6 +456,7 @@
   sizeInput.addEventListener('input', () => setBrushSize(Number(sizeInput.value)));
   opacityInput.addEventListener('input', () => setOpacity(Number(opacityInput.value)));
   invertInput.addEventListener('change', () => setInvert(invertInput.checked));
+  excludeInput.addEventListener('change', () => toggleExclude(excludeInput.checked));
 
   // keybinds
   function isTypingTarget(t) {
