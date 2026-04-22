@@ -99,6 +99,10 @@
     return stem.endsWith(EXCLUDE_SUFFIX);
   }
 
+  function isDrawingPointer(e) {
+    return e.pointerType !== 'touch';
+  }
+
   // ── layout ─────────────────────────────────────────────────────────────
 
   function layoutCanvases() {
@@ -407,6 +411,7 @@
 
   overlayCanvas.addEventListener('pointerdown', (e) => {
     if (!nativeW) return;
+    if (!isDrawingPointer(e)) return;
     overlayCanvas.setPointerCapture(e.pointerId);
     activePointerId = e.pointerId;
     drawing = true;
@@ -419,6 +424,7 @@
   });
 
   overlayCanvas.addEventListener('pointermove', (e) => {
+    if (!isDrawingPointer(e)) return;
     updateCursorPosition(e);
     if (!drawing || e.pointerId !== activePointerId) return;
     const { x, y } = toNative(e);
@@ -449,7 +455,10 @@
     cursor.style.transform = `translate(${x - px/2}px, ${y - px/2}px)`;
   }
 
-  overlayCanvas.addEventListener('pointerenter', updateCursorPosition);
+  overlayCanvas.addEventListener('pointerenter', (e) => {
+    if (!isDrawingPointer(e)) return;
+    updateCursorPosition(e);
+  });
 
   // ── controls ───────────────────────────────────────────────────────────
 
