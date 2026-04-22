@@ -293,7 +293,11 @@
         headers: { 'Content-Type': 'image/png' },
         body: blob,
       });
-      if (!r.ok) throw new Error(`save failed: ${r.status}`);
+      if (!r.ok) {
+        let detail = `${r.status}`;
+        try { detail = (await r.json()).detail || detail; } catch {}
+        throw new Error(`save failed: ${detail}`);
+      }
       // refresh cached mask so prev navigation sees the new version
       const entry = entryFor(name);
       if (entry.mask) URL.revokeObjectURL(entry.mask.url);
@@ -313,7 +317,7 @@
       await loadAt(idx + delta);
     } catch (err) {
       console.error(err);
-      alert('Save failed — not navigating. Check console.');
+      alert(`Save failed — not navigating.\n${err.message || err}`);
     } finally {
       navigating = false;
     }
